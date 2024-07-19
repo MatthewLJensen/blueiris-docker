@@ -1,0 +1,45 @@
+services:
+  windows:
+    image: dockurr/windows
+    container_name: windows-blueiris
+    environment:
+      VERSION: "tiny11"
+    devices:
+      - /dev/kvm
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006       # NoVNC
+      - 3389:3389/tcp   # RDP
+      - 3389:3389/udp   # RDP
+      - 81:81/tcp       # Blue Iris Web Server
+    stop_grace_period: 2m
+    volumes:
+      - ./blueiris:/blueiris
+
+
+
+# To have your router assign an IP to this container, you can use the following:
+# First setup a macvlan network in docker:
+
+# docker network create -d macvlan \
+#     --subnet=192.168.0.0/24 \
+#     --gateway=192.168.0.1 \
+#     --ip-range=192.168.0.100/28 \
+#     -o parent=eth0 vlan
+
+# And adjust the above compose file to the following:configs:
+
+# services:
+#   windows:
+#     container_name: windows
+#     ..<snip>..
+#     networks:
+#       vlan:
+#         ipv4_address: 192.168.0.100
+
+# networks:
+#   vlan:
+#     external: true
+
+# Then remove the port mapping settings
